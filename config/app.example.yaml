@@ -1,0 +1,10 @@
+browser:
+  path: C:\Users\example\AppData\Local\Vivaldi\Application\vivaldi.exe
+  default: Default # The folder name of the default profile
+
+mapping:
+  - name: "Work" # Name it however you like
+    folder: "Profile 1" # Must be the correct profile folder
+    urls: # URLs will be normalized, only the host (domain) will be checked
+      - https://company.example.com/
+      - https://something.else.example.com
