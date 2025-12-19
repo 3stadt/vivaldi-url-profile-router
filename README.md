@@ -1,10 +1,11 @@
-A tiny Go utility that routes a URL to a Vivaldi browser profile and launches Vivaldi with the appropriate profile. It's useful when you want certain domains always to open in specific Vivaldi profiles (Work, Personal, etc.).
+A tiny Go utility that routes a URL to a Vivaldi browser profile and launches Vivaldi with the appropriate profile. It's useful when you want certain domains always to open in specific Vivaldi profiles (Work, Personal, etc.), or to show a GUI chooser for selected sites.
 
 ---
 
 ## Features
 
 - Route URLs to a specific Vivaldi profile based on host/domain.
+- Optional GUI profile picker for selected hosts (configurable).
 - Validates configuration and rejects duplicate URL entries.
 - Supports HTTP and HTTPS only; strips userinfo and ports when matching.
 - Launches Vivaldi detached using the `--profile-directory` flag.
@@ -14,7 +15,7 @@ A tiny Go utility that routes a URL to a Vivaldi browser profile and launches Vi
 
 ## Quick note
 
-> The router selects the **first valid URL** among command-line arguments and opens that one. If no mapping matches, it falls back to the configured default profile.
+> The router selects the **first valid URL** among command-line arguments and opens that one. If the URL's host is listed in `selectprofile`, a GUI chooser is shown. Otherwise, it uses the matching mapping or the configured default profile.
 
 ---
 
@@ -48,6 +49,10 @@ browser:
   path: C:\Users\example\AppData\Local\Vivaldi\Application\vivaldi.exe
   default: Default # The folder name of the default profile
 
+selectprofile:
+  - https://mail.example.com/
+  - https://intranet.example.com
+
 mapping:
   - name: "Work"
     folder: "Profile 1"
@@ -57,16 +62,18 @@ mapping:
 ```
 
 Fields:
-- `browser.path` — full path to Vivaldi executable.
-- `browser.default` — profile folder name used when no mapping is matched.
-- `mapping` — list of mappings:
-  - `name` — human-friendly name.
-  - `folder` — Vivaldi profile folder name to pass as `--profile-directory`.
-  - `urls` — list of URLs (the host is extracted and normalized for matching).
+- `browser.path` - full path to Vivaldi executable.
+- `browser.default` - profile folder name used when no mapping is matched.
+- `selectprofile` - list of URLs whose host should trigger the GUI profile chooser.
+- `mapping` - list of mappings:
+  - `name` - human-friendly name.
+  - `folder` - Vivaldi profile folder name to pass as `--profile-directory`.
+  - `urls` - list of URLs (the host is extracted and normalized for matching).
 
 Behavior:
 - URL validation is performed at startup. Missing required fields or duplicates will make the app fail early with a helpful error message.
 - Only the host is used for matching (lowercased and trailing dot removed). Subdomains are treated distinctly; list them explicitly if required.
+- When a host matches `selectprofile`, the GUI shows available profiles (Default plus all configured mappings). Cancel exits without launching.
 
 ---
 
@@ -111,4 +118,4 @@ Pull requests are welcome, but the tool is only intended for personal use by the
 
 ## License
 
-This project is open source — see the LICENSE file.
+This project is open source - see the LICENSE file.

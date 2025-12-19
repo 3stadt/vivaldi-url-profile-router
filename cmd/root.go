@@ -12,6 +12,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/3stadt/vivialdi-url-profile-router/gui"
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -22,7 +23,8 @@ type Configuration struct {
 		Path           string `toml:"path" mapstructure:"path" validate:"file"`
 		DefaultProfile string `toml:"default" mapstructure:"default" validate:"required"`
 	} `toml:"browser"`
-	URLMapping []struct {
+	ShowSelection []string `toml:"selectprofile" mapstructure:"selectprofile"`
+	URLMapping    []struct {
 		Name       string   `toml:"name" mapstructure:"name" validate:"required"`
 		Folder     string   `toml:"folder" mapstructure:"folder" validate:"required"`
 		TargetUrls []string `toml:"urls" mapstructure:"urls" validate:"min=1,dive,url"`
@@ -105,7 +107,27 @@ func route(cmd *cobra.Command, args []string) {
 
 	browserArgs := []string{}
 
-	profile := getProfile(routeHost)
+	profile, showSelection := getProfile(routeHost)
+
+	if showSelection {
+		// used for human readable select options in the GUI
+		profileSelection := map[string]string{
+			"Default": config.Browser.DefaultProfile,
+		}
+
+		for _, p := range config.URLMapping {
+			profileSelection[p.Name] = p.Folder
+		}
+
+		choosenProfile, cancel := gui.ChooseProfile(profile, profileSelection)
+		if cancel {
+			os.Exit(0)
+		}
+
+		if choosenProfile != "" {
+			profile = &choosenProfile
+		}
+	}
 	if profile != nil {
 		browserArgs = append(browserArgs, fmt.Sprintf(`--profile-directory=%s`, *profile))
 	} else {
@@ -220,8 +242,23 @@ func sanitizeURL(raw string) (launchURL string, routeHost string, err error) {
 // getProfile is used to check if a URL is defined in the config
 // It returns:
 //   - profileFolder: The profile to start the browser with, or nil if no profile should be used
-func getProfile(checkURL string) (profileFolder *string) {
+//   - showSelection: If true, the user should be prompted which profile to use
+func getProfile(checkURL string) (profileFolder *string, showSelection bool) {
+	showSelection = false
 	profile := ""
+
+	for _, selectionURL := range config.ShowSelection {
+		// get host from config URL - only host/domains are checked, no subfolders
+		u, _ := url.Parse(selectionURL)
+		host := u.Host
+		host = strings.ToLower(host)
+		host = strings.TrimSuffix(host, ".")
+		if checkURL == host {
+			showSelection = true
+			return &profile, showSelection
+		}
+	}
+
 	for _, um := range config.URLMapping {
 		profile = um.Folder
 		for _, targetURL := range um.TargetUrls {
@@ -232,9 +269,9 @@ func getProfile(checkURL string) (profileFolder *string) {
 			host = strings.ToLower(host)
 			host = strings.TrimSuffix(host, ".")
 			if checkURL == host {
-				return &profile
+				return &profile, showSelection
 			}
 		}
 	}
-	return nil
+	return nil, showSelection
 }
