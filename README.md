@@ -21,20 +21,30 @@ A tiny Go utility that routes a URL to a Vivaldi browser profile and launches Vi
 
 ## Installation
 
+### Building
+
 Build from source:
+
+Use goreleaser, then take the zip file content and extract it to a folder
+
+```bash
+goreleaser release --snapshot --clean
+```
+
+Or build normally then copy all needed files by hand
 
 ```bash
 # From repo root
-go build -o vivialdi-url-profile-router ./...
+go build -o vivaldi-url-profile-router ./...
 ```
 
-Or use `go install` (requires Go modules):
+### Installing
 
-```bash
-go install ./...
-```
+Copy everything where you want it to live.
 
-The binary expects a app.yaml file in the repository working directory (see configuration section).
+Open `config/add_as_browser.reg`, edit, save. Use `reg import add_as_browser.reg` in powershell to import without UAC.
+
+The binary expects a app.yaml file in the config directory (see configuration section).
 
 ---
 
@@ -83,10 +93,10 @@ Open a URL (first valid URL argument is used):
 
 ```bash
 # Single URL
-vivialdi-url-profile-router "https://company.example.com/some/path"
+vivaldi-url-profile-router "https://company.example.com/some/path"
 
 # Multiple arguments - the router picks the first parseable URL
-vivialdi-url-profile-router some "garbage" "https://company.example.com"
+vivaldi-url-profile-router some "garbage" "https://company.example.com"
 ```
 
 It launches Vivaldi with a profile flag similar to:
@@ -107,6 +117,18 @@ Exit behavior:
 - Hosts with userinfo or ports are normalized (credentials removed, port stripped) before matching.
 - Duplicate target URLs across mappings are disallowed and reported on startup.
 - Code lives under cmd including platform-specific detached start logic (`start_detached_windows.go`, `start_detached_unix.go`).
+
+---
+
+## Changing the application icon
+
+To change the Windows application icon, you need to generate your own COFF (.syso) object.
+
+- Replace the `vivaldi-url-profile-router.png` file with your own
+- Install rsrc: `go install github.com/akavel/rsrc@latest`
+- Use imagemagick to convert the png to ico: `convert vivaldi-url-profile-router.png -define icon:auto-resize=256,128,64,48,32,16 vivaldi-url-profile-router.ico`
+- Generate the COFF object: `rsrc -ico vivaldi-url-profile-router.ico -o vivaldi-url-profile-router_windows_amd64.syso -arch amd64`
+- Rebuild the project, see Installation step above
 
 ---
 

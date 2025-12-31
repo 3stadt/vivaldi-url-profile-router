@@ -1,4 +1,4 @@
-module github.com/3stadt/vivialdi-url-profile-router
+module github.com/3stadt/vivaldi-url-profile-router
 
 go 1.24.0
 

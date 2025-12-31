@@ -1,6 +1,3 @@
-/*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -12,7 +9,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/3stadt/vivialdi-url-profile-router/gui"
+	"github.com/3stadt/vivaldi-url-profile-router/gui"
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -35,8 +32,8 @@ var config Configuration
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "vivialdi-url-profile-router",
-	Short: "rule-based opening of URLs in specific Vivialdi profiles",
+	Use:   "vivaldi-url-profile-router",
+	Short: "rule-based opening of URLs in specific Vivaldi profiles",
 	Long:  ``,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
@@ -46,9 +43,17 @@ var rootCmd = &cobra.Command{
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	err := rootCmd.Execute()
+	f, err := os.OpenFile("app.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
-		os.Exit(1)
+		log.Fatalf("Error opening file: %v", err)
+	}
+	defer f.Close()
+
+	// Set output of logs to file.
+	log.SetOutput(f)
+	err = rootCmd.Execute()
+	if err != nil {
+		log.Fatalf("error: %s", err)
 	}
 }
 
