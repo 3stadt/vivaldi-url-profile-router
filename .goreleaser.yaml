@@ -3,6 +3,8 @@
 
 version: 2
 
+project_name: vivaldi-url-profile-router
+
 before:
   hooks:
     - go mod tidy
@@ -16,6 +18,8 @@ builds:
       #- darwin
     goarch:
       - amd64
+    ldflags:
+      - -H=windowsgui
 
 archives:
   - formats: [tar.gz]
@@ -33,6 +37,7 @@ archives:
         formats: [zip]
     files:
       - config/app.example.yaml
+      - config/add_as_browser.reg
 
 changelog:
   sort: asc

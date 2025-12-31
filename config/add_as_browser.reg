@@ -1,0 +1,36 @@
+Windows Registry Editor Version 5.00
+
+; RegisteredApplications entry (per-user)
+[HKEY_CURRENT_USER\SOFTWARE\RegisteredApplications]
+"Vivaldi URL profile router"="Software\\Clients\\StartMenuInternet\\vivaldi-url-profile-router\\Capabilities"
+
+; StartMenuInternet app entry and Capabilities (per-user)
+[HKEY_CURRENT_USER\SOFTWARE\Clients\StartMenuInternet\vivaldi-url-profile-router]
+@="Vivaldi URL profile router"
+
+[HKEY_CURRENT_USER\SOFTWARE\Clients\StartMenuInternet\vivaldi-url-profile-router\Capabilities]
+"ApplicationName"="Vivaldi URL profile router"
+"ApplicationDescription"="Launch Vivaldi with per-profile routing for HTTP/HTTPS"
+
+[HKEY_CURRENT_USER\SOFTWARE\Clients\StartMenuInternet\vivaldi-url-profile-router\Capabilities\URLAssociations]
+"http"="vivaldi-url-profile-router-url"
+"https"="vivaldi-url-profile-router-url"
+
+; Default icon shown in Settings (per-user)
+[HKEY_CURRENT_USER\SOFTWARE\Clients\StartMenuInternet\vivaldi-url-profile-router\DefaultIcon]
+@="\"C:\\vupr\\vivaldi-url-profile-router.exe\",0"
+
+; ProgID under HKCU\SOFTWARE\Classes that the URLAssociations point to
+[HKEY_CURRENT_USER\SOFTWARE\Classes\vivaldi-url-profile-router-url]
+@="Vivaldi URL handler"
+
+[HKEY_CURRENT_USER\SOFTWARE\Classes\vivaldi-url-profile-router-url\DefaultIcon]
+@="\"C:\\vupr\\vivaldi-url-profile-router.exe\",0"
+
+[HKEY_CURRENT_USER\SOFTWARE\Classes\vivaldi-url-profile-router-url\shell\open\command]
+@="\"C:\\vupr\\vivaldi-url-profile-router.exe\" \"%1\""
+
+; App Paths helps Windows locate the exe
+[HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\vivaldi-url-profile-router.exe]
+@="C:\\vupr\\vivaldi-url-profile-router.exe"
+"Path"="C:\\vupr"
