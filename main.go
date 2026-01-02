@@ -31,6 +31,18 @@ func findConfigDir() {
 
 	configDir := "config"
 	configFile := "app.yaml"
+
+	exePath, err := os.Executable()
+	if err != nil {
+		log.Fatalf("can't get executable directory: %s", err)
+	}
+
+	exeDir := filepath.Dir(exePath)
+	if _, err := os.Stat(filepath.Join(exeDir, configDir, configFile)); err == nil {
+		_ = os.Chdir(exeDir)
+		return
+	}
+
 	workDir, err := os.Getwd()
 	if err != nil {
 		log.Fatalf("can't get working directory: %s", err)
@@ -42,23 +54,12 @@ func findConfigDir() {
 	}
 
 	_, callerFile, _, ok := runtime.Caller(0)
-	if ok {
-		callerDir := filepath.Dir(callerFile)
-		if _, err := os.Stat(filepath.Join(callerDir, configDir, configFile)); err == nil {
-			_ = os.Chdir(callerDir)
-			return
-		}
+	if !ok {
 	}
+	callerDir := filepath.Dir(callerFile)
+	_ = os.Chdir(callerDir)
 
-	exePath, err := os.Executable()
-	if err != nil {
-		log.Fatalf("can't get executable directory: %s", err)
-	}
-
-	cfgDir := filepath.Dir(exePath)
-	_ = os.Chdir(cfgDir)
-
-	if _, err := os.Stat(filepath.Join(cfgDir, configDir, configFile)); errors.Is(err, os.ErrNotExist) {
-		log.Fatalf("Can't find %q, make sure it exists in %q", filepath.Join(configDir, configFile), workDir)
+	if _, err := os.Stat(filepath.Join(callerDir, configDir, configFile)); errors.Is(err, os.ErrNotExist) {
+		log.Fatalf("Can't find %q, make sure it exists in: %q, %q, or %q", filepath.Join(configDir, configFile), exeDir, workDir, callerDir)
 	}
 }
