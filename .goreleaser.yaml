@@ -20,6 +20,8 @@ builds:
       - amd64
     ldflags:
       - -H=windowsgui
+      - -w
+      - -s
 
 archives:
   - formats: [tar.gz]
