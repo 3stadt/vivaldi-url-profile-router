@@ -4,6 +4,7 @@ go 1.24.0
 
 require (
 	fyne.io/fyne/v2 v2.7.1
+	github.com/dweymouth/fyne-tooltip v0.4.0
 	github.com/go-playground/validator/v10 v10.29.0
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0

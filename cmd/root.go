@@ -20,6 +20,9 @@ type Configuration struct {
 		Path           string `toml:"path" mapstructure:"path" validate:"file"`
 		DefaultProfile string `toml:"default" mapstructure:"default" validate:"required"`
 	} `toml:"browser"`
+	Gui struct {
+		MaxButtons int `toml:"maxbuttons" mapstructure:"maxbuttons"`
+	} `toml:"gui" mapstructure:"gui"`
 	ShowSelection []string `toml:"selectprofile" mapstructure:"selectprofile"`
 	URLMapping    []struct {
 		Name       string   `toml:"name" mapstructure:"name" validate:"required"`
@@ -85,7 +88,7 @@ func initConfig() {
 	}
 
 	if err := checkDuplicates(&config); err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error reading config: %s\n", err)
 	}
 }
 
@@ -124,10 +127,11 @@ func route(cmd *cobra.Command, args []string) {
 			profileSelection[p.Name] = p.Folder
 		}
 
-		choosenProfile, cancel := gui.ChooseProfile(profile, profileSelection)
-		if cancel {
-			os.Exit(0)
+		maxButtons := config.Gui.MaxButtons
+		if maxButtons == 0 {
+			maxButtons = 8
 		}
+		choosenProfile := gui.ChooseProfile(launchURL, profile, maxButtons, profileSelection)
 
 		if choosenProfile != "" {
 			profile = &choosenProfile

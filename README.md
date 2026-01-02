@@ -42,7 +42,7 @@ go build -o vivaldi-url-profile-router ./...
 
 Copy everything where you want it to live.
 
-Open `config/add_as_browser.reg`, edit, save. Use `reg import add_as_browser.reg` in powershell to import without UAC.
+Open `config/add_as_browser.reg`, **edit**, save. Use `reg import add_as_browser.reg` in Powershell to import without UAC.
 
 The binary expects a app.yaml file in the config directory (see configuration section).
 
@@ -107,7 +107,7 @@ vivaldi.exe --profile-directory="Profile 1" https://company.example.com/some/pat
 
 Exit behavior:
 - Success: exits with status 0.
-- On configuration or runtime errors: logs the error and exits non-zero.
+- On configuration or runtime errors: logs the error and exits non-zero. A `vupr_error.log` is written to the user's home directory when there is an error with finding the config files, otherwise there is an `app.log` file in the application directory.
 
 ---
 
@@ -135,6 +135,10 @@ To change the Windows application icon, you need to generate your own COFF (.sys
 ## Contributing
 
 Pull requests are welcome, but the tool is only intended for personal use by the author and still in development.
+
+If you are using `go run .` to start the project, make sure to set the environment variable `VUPRDEV` to `true`, otherwise execution will fail.
+This is because the location of the config files is relative to the executable, which is not true when using `go run`.
+For convenience, there is a `run.sh` that you can use in Git Bash.
 
 ---
 
