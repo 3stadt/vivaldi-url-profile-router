@@ -2,6 +2,9 @@ browser:
   path: C:\Users\example\AppData\Local\Vivaldi\Application\vivaldi.exe
   default: Default # The folder name of the default profile
 
+gui:
+  maxbuttons: 8 # optional, will make the UI for profile selection scrollable for many buttons
+
 selectprofile: # All URLs listed here will show a dialogue box that prompts the user to choose a profile
   - https://decision1.example.com
   - https://decision2.example.com
