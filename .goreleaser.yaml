@@ -12,6 +12,8 @@ before:
 builds:
   - env:
       - CGO_ENABLED=1
+      - '{{ if ne .Runtime.Goos "windows" }}CC=x86_64-w64-mingw32-gcc{{ end }}'
+      - '{{ if ne .Runtime.Goos "windows" }}CXX=x86_64-w64-mingw32-g++{{ end }}'
     goos:
       #- linux
       - windows
@@ -19,7 +21,7 @@ builds:
     goarch:
       - amd64
     ldflags:
-      - -H=windowsgui
+      - '{{ if ne .Os "windows" }}-H=windowsgui{{ end }}'
       - -w
       - -s
 
